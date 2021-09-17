@@ -17,7 +17,7 @@ namespace GlobalMediaControl
             Options.ContextMenuItems = ContextMenuItems;
         }
 
-        protected override UIElement UIElement => new GolobalMediaControl();
+        protected override UIElement UIElement => new MediaControlBar();
 
         private List<DeskBandMenuItem> ContextMenuItems
         {

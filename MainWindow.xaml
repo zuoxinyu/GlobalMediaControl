@@ -1,0 +1,12 @@
+﻿<Window x:Class="GlobalMediaControl.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:GlobalMediaControl="clr-namespace:GlobalMediaControl"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <GlobalMediaControl:MediaControlBar HorizontalAlignment="Left" Height="40" Margin="176,165,0,0" VerticalAlignment="Top" Width="377" Loaded="GlobalMediaControl_Loaded"/>
+    </Grid>
+</Window>
