@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:GlobalMediaControl="clr-namespace:GlobalMediaControl"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Width="204.53"
+        Height="80"
+        Title="MainWindow">
     <Grid>
-        <GlobalMediaControl:MediaControlBar HorizontalAlignment="Left" Height="40" Margin="176,165,0,0" VerticalAlignment="Top" Width="377" Loaded="GlobalMediaControl_Loaded"/>
+        <GlobalMediaControl:MediaControlBar HorizontalAlignment="Left" Height="40" Margin="0,0,0,0" VerticalAlignment="Top" Loaded="GlobalMediaControl_Loaded"/>
     </Grid>
 </Window>

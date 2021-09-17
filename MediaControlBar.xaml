@@ -3,11 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2009" 
+             xmlns:local="clr-namespace:GlobalMediaControl"
              Name="mediaControl"
              mc:Ignorable="d" 
              DataContext="{Binding ElementName=mediaControl}"
              d:DesignHeight="32" d:DesignWidth="128" Foreground="White" MinWidth="128">
     <UserControl.Resources>
+        <local:MarqSizeConverter x:Key="MarqSizeConverter"/>
         <Style x:Key="ctrlButtonStyleFocus">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -49,21 +51,49 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <Storyboard RepeatBehavior="1x" x:Key="slideUpStoryBoard" x:Name="slideUpSB">
+            <DoubleAnimation 
+                From="32" To="0" 
+                Storyboard.TargetName="slide" 
+                Storyboard.TargetProperty="Y"
+                Duration="0:0:0.2" />
+        </Storyboard>
+        <Storyboard RepeatBehavior="1x" x:Key="slideDownStoryBoard" x:Name="slideDownSB">
+            <DoubleAnimation 
+                From="-32" To="0" 
+                Storyboard.TargetName="slide" 
+                Storyboard.TargetProperty="Y"
+                Duration="0:0:0.2" />
+        </Storyboard>
+        <Storyboard RepeatBehavior="1x" x:Key="fadeStoryBoard" x:Name="fadeSB">
+            <DoubleAnimation 
+                From="0" To="1" 
+                Storyboard.TargetName="contentGrid" 
+                Storyboard.TargetProperty="Opacity"
+                Duration="0:0:0.5" />
+        </Storyboard>
+        <Storyboard RepeatBehavior="1x" x:Key="marqueeStoryBoard" x:Name="marqueeSB">
+            <DoubleAnimation 
+                From="0" To="{Binding DesiredTextSize}" 
+                Storyboard.TargetName="marquee" 
+                Storyboard.TargetProperty="X"
+                Duration="0:0:5" />
+        </Storyboard>
     </UserControl.Resources>
+
     <Grid PreviewMouseDown="OnPreviewMouseDown" MouseWheel="OnMouseWheel">
         <Grid x:Name="mainGrid" Height="32" MinWidth="128" MinHeight="32">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="32"/>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Image x:Name="albumIcon" Visibility="Hidden" Source="Resources/album-32.jpg"/>
             <Image x:Name="playIcon" Visibility="Hidden" Source="Resources/play-32.png"/>
             <Image x:Name="pauseIcon" Visibility="Hidden" Source="Resources/pause-32.png"/>
             <Image x:Name="albumImg"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Height="32"
-                Width="32"
+                Height="30"
+                Width="30"
                 Source="Resources/album-32.jpg"
                 Margin="2">
                 <Image.ToolTip>
@@ -74,12 +104,13 @@
                     </TextBlock>
                 </Image.ToolTip>
             </Image>
-            <Grid Grid.Column="1" Margin="5,0,0,0">
+            <Grid x:Name="contentGrid" Grid.Column="1" Margin="5,0,0,0">
                 <Grid x:Name="textGrid" Visibility="Visible" VerticalAlignment="Center">
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
+
                     <Grid.ToolTip>
                         <Grid x:Name="albumTooltip" Height="120">
                             <Grid.ColumnDefinitions>
@@ -96,22 +127,42 @@
                                     VerticalAlignment="Center"
                                     HorizontalAlignment="Center"/>
                             </Grid>
-                            <Grid Grid.Column="1" Margin="10" MinWidth="180">
+                            <Grid Grid.Column="1" Margin="10" MinWidth="180" MaxWidth="300">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="2*"/>
                                     <RowDefinition Height="1*"/>
                                     <RowDefinition Height="1*"/>
                                     <RowDefinition Height="1*"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Text="{Binding MediaProps.Title}" FontSize="16" FontWeight="Bold"/>
-                                <TextBlock Grid.Row="1" Text="{Binding MediaProps.Artist}" FontSize="14"/>
-                                <TextBlock Grid.Row="2"></TextBlock>
+                                <TextBlock Grid.Row="0" Text="{Binding MediaProps.Title}" FontSize="16" FontWeight="Bold" TextWrapping="WrapWithOverflow"/>
+                                <TextBlock Grid.Row="1" Text="{Binding MediaProps.Artist}" FontSize="14" TextWrapping="WrapWithOverflow"/>
+                                <TextBlock Grid.Row="2" Text="{Binding MediaProps.AlbumTitle}" FontSize="14" TextWrapping="WrapWithOverflow"/>
                             </Grid>
                         </Grid>
                     </Grid.ToolTip>
 
-                    <Label x:Name="titleLable" Content="Title" Grid.Row="0" Padding="0"/>
-                    <Label x:Name="artistLable" Content="Artist" Grid.Row="1" Padding="0" FontSize="10" FontWeight="Light"/>
+                    <Grid.RenderTransform>
+                        <TranslateTransform x:Name="slide"/>
+                    </Grid.RenderTransform>
+
+                    <Grid Grid.Row="0">
+                        <Canvas Height="16" x:Name="canvas" Width="{Binding ActualWidth, ElementName=mediaControl}" ClipToBounds="True">
+                            <Label x:Name="titleBlock"
+                                Canvas.Left="0"
+                                Padding="0"
+                                FontSize="12"
+                                Content="Not Playing"
+                                SnapsToDevicePixels="True">
+                                <Label.RenderTransform>
+                                    <TranslateTransform x:Name="marquee"/>
+                                </Label.RenderTransform>
+                            </Label>
+                        </Canvas>
+                    </Grid>
+
+                    <Label x:Name="artistLable" Grid.Row="1" Padding="0" FontSize="9" FontWeight="Light" SnapsToDevicePixels="True">
+                        <TextBlock x:Name="artistBlock" Text="{Binding ArtistLine, FallbackValue='No Artist', TargetNullValue='No Artist'}" TextTrimming="CharacterEllipsis"/>
+                    </Label>
                 </Grid>
                 <Grid x:Name="actionGrid" Visibility="Hidden" VerticalAlignment="Center" HorizontalAlignment="Left">
                     <Grid.ColumnDefinitions>
