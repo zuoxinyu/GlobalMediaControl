@@ -34,5 +34,53 @@ namespace GlobalMediaControl.Properties {
                 this["NightMode"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public uint AcrylicOpacity {
+            get {
+                return ((uint)(this["AcrylicOpacity"]));
+            }
+            set {
+                this["AcrylicOpacity"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#ffffff")]
+        public string AcrylicColor {
+            get {
+                return ((string)(this["AcrylicColor"]));
+            }
+            set {
+                this["AcrylicColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#ffffff")]
+        public string BackgroundColor {
+            get {
+                return ((string)(this["BackgroundColor"]));
+            }
+            set {
+                this["BackgroundColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("#000000")]
+        public string ForegroundColor {
+            get {
+                return ((string)(this["ForegroundColor"]));
+            }
+            set {
+                this["ForegroundColor"] = value;
+            }
+        }
     }
 }

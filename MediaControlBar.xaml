@@ -4,12 +4,28 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2009" 
              xmlns:local="clr-namespace:GlobalMediaControl"
+             xmlns:properties="clr-namespace:GlobalMediaControl.Properties"
              Name="mediaControl"
              mc:Ignorable="d" 
              DataContext="{Binding ElementName=mediaControl}"
-             d:DesignHeight="32" d:DesignWidth="128" Foreground="White" MinWidth="128">
+             d:DesignHeight="32" d:DesignWidth="128" MinWidth="128">
     <UserControl.Resources>
         <local:MarqSizeConverter x:Key="MarqSizeConverter"/>
+        <local:ColorConverter x:Key="ColorConverter"/>
+        <Style TargetType="TextBlock">
+            <Setter Property="Control.Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Color="{Binding Source={x:Static properties:Settings.Default}, Path=ForegroundColor, Converter={StaticResource ColorConverter}}" Opacity="1"/>
+                </Setter.Value>
+            </Setter>
+        </Style> 
+        <Style x:Key="acrylicToolTipStyle" TargetType="ToolTip">
+            <Setter Property="Background" Value="#01000000"/>
+            <Setter Property="BorderBrush" Value="#00000000"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
         <Style x:Key="ctrlButtonStyleFocus">
             <Setter Property="Control.Template">
                 <Setter.Value>
@@ -56,14 +72,14 @@
                 From="32" To="0" 
                 Storyboard.TargetName="slide" 
                 Storyboard.TargetProperty="Y"
-                Duration="0:0:0.2" />
+                Duration="0:0:0.1" />
         </Storyboard>
         <Storyboard RepeatBehavior="1x" x:Key="slideDownStoryBoard" x:Name="slideDownSB">
             <DoubleAnimation 
                 From="-32" To="0" 
                 Storyboard.TargetName="slide" 
                 Storyboard.TargetProperty="Y"
-                Duration="0:0:0.2" />
+                Duration="0:0:0.1" />
         </Storyboard>
         <Storyboard RepeatBehavior="1x" x:Key="fadeStoryBoard" x:Name="fadeSB">
             <DoubleAnimation 
@@ -81,7 +97,9 @@
         </Storyboard>
     </UserControl.Resources>
 
-    <Grid PreviewMouseDown="OnPreviewMouseDown" MouseWheel="OnMouseWheel">
+    <Grid
+        PreviewMouseDown="OnPreviewMouseDown"
+        MouseWheel="OnMouseWheel">
         <Grid x:Name="mainGrid" Height="32" MinWidth="128" MinHeight="32">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="32"/>
@@ -97,11 +115,13 @@
                 Source="Resources/album-32.jpg"
                 Margin="2">
                 <Image.ToolTip>
-                    <TextBlock> 
+                    <ToolTip Style="{StaticResource acrylicToolTipStyle}" Loaded="OnToolTipLoad">
+                        <TextBlock> 
                         Middle click to play/pause.<LineBreak/>
                         Scroll up/down to switch next/previous song.<LineBreak/>
                         Double click to switch between infomation/button/lyric layout.
-                    </TextBlock>
+                        </TextBlock>
+                    </ToolTip>
                 </Image.ToolTip>
             </Image>
             <Grid x:Name="contentGrid" Grid.Column="1" Margin="5,0,0,0">
@@ -112,33 +132,43 @@
                     </Grid.RowDefinitions>
 
                     <Grid.ToolTip>
-                        <Grid x:Name="albumTooltip" Height="120">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="120"/>
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Grid Grid.Column="0" Margin="10">
-                                <Image
-                                    Grid.Column="0"
-                                    Height="100"
-                                    Width="100"
-                                    Source="{Binding AlbumImgSrc}"
-                                    Stretch="Fill"
-                                    VerticalAlignment="Center"
-                                    HorizontalAlignment="Center"/>
+                        <!-- ToolTip has it's own data context, should bind by using following codes -->
+                        <!-- otherwise it won't update continually -->
+                        <ToolTip 
+                            Style="{StaticResource acrylicToolTipStyle}"
+                            Loaded="OnToolTipLoad"
+                            Placement="MousePoint"
+                            DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                            <Grid x:Name="albumTooltip" Height="180">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="180"/>
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" Margin="10">
+                                    <Image
+                                        Grid.Column="0"
+                                        Height="180"
+                                        Width="160"
+                                        Source="{Binding AlbumImgSrc}"
+                                        Stretch="Uniform"
+                                        VerticalAlignment="Center"
+                                        HorizontalAlignment="Center"/>
+                                </Grid>
+                                <Grid Grid.Column="1" Margin="10" MinWidth="180" MaxWidth="300">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="2*"/>
+                                        <RowDefinition Height="4*"/>
+                                        <RowDefinition Height="1*"/>
+                                        <RowDefinition Height="1*"/>
+                                        <RowDefinition Height="1*"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="Now Playing:" FontSize="16" FontWeight="Light" TextWrapping="WrapWithOverflow"/>
+                                    <TextBlock Grid.Row="1" Text="{Binding MediaProps.Title}" FontSize="16" FontWeight="Bold" TextWrapping="WrapWithOverflow"/>
+                                    <TextBlock Grid.Row="2" Text="{Binding MediaProps.Artist}" FontSize="12" TextWrapping="WrapWithOverflow"/>
+                                    <TextBlock Grid.Row="3" Text="{Binding MediaProps.AlbumTitle}" FontSize="12" TextWrapping="WrapWithOverflow"/>
+                                </Grid>
                             </Grid>
-                            <Grid Grid.Column="1" Margin="10" MinWidth="180" MaxWidth="300">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="2*"/>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Text="{Binding MediaProps.Title}" FontSize="16" FontWeight="Bold" TextWrapping="WrapWithOverflow"/>
-                                <TextBlock Grid.Row="1" Text="{Binding MediaProps.Artist}" FontSize="14" TextWrapping="WrapWithOverflow"/>
-                                <TextBlock Grid.Row="2" Text="{Binding MediaProps.AlbumTitle}" FontSize="14" TextWrapping="WrapWithOverflow"/>
-                            </Grid>
-                        </Grid>
+                        </ToolTip>
                     </Grid.ToolTip>
 
                     <Grid.RenderTransform>
@@ -147,21 +177,25 @@
 
                     <Grid Grid.Row="0">
                         <Canvas Height="16" x:Name="canvas" Width="{Binding ActualWidth, ElementName=mediaControl}" ClipToBounds="True">
-                            <Label x:Name="titleBlock"
+                            <TextBlock
+                                x:Name="titleBlock"
                                 Canvas.Left="0"
                                 Padding="0"
                                 FontSize="12"
-                                Content="Not Playing"
+                                Text="Not Playing"
                                 SnapsToDevicePixels="True">
-                                <Label.RenderTransform>
+                                <TextBlock.RenderTransform>
                                     <TranslateTransform x:Name="marquee"/>
-                                </Label.RenderTransform>
-                            </Label>
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
                         </Canvas>
                     </Grid>
 
                     <Label x:Name="artistLable" Grid.Row="1" Padding="0" FontSize="9" FontWeight="Light" SnapsToDevicePixels="True">
-                        <TextBlock x:Name="artistBlock" Text="{Binding ArtistLine, FallbackValue='No Artist', TargetNullValue='No Artist'}" TextTrimming="CharacterEllipsis"/>
+                        <TextBlock
+                            x:Name="artistBlock"
+                            Text="{Binding ArtistLine, FallbackValue='No Artist', TargetNullValue='No Artist'}"
+                            TextTrimming="CharacterEllipsis"/>
                     </Label>
                 </Grid>
                 <Grid x:Name="actionGrid" Visibility="Hidden" VerticalAlignment="Center" HorizontalAlignment="Left">

@@ -15,6 +15,12 @@ namespace GlobalMediaControl
         public Deskband()
         {
             Options.ContextMenuItems = ContextMenuItems;
+            Microsoft.Win32.SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged; ;
+        }
+
+        private void SystemEvents_UserPreferenceChanged(object sender, Microsoft.Win32.UserPreferenceChangedEventArgs e)
+        {
+            AcrylicWindowHelper.SwitchTheme();
         }
 
         protected override UIElement UIElement => new MediaControlBar();

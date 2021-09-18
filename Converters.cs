@@ -14,15 +14,8 @@ namespace GlobalMediaControl
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Console.WriteLine(value);
-            Console.WriteLine(targetType);
-            Console.WriteLine(parameter);
-            Console.WriteLine(culture);
             Grid label = (Grid)value;
             int offset = (int)(label.ActualWidth - label.RenderSize.Width);
-            Console.WriteLine("actual:" + label.ActualWidth);
-            Console.WriteLine("render:" + label.RenderSize.Width);
-            Console.WriteLine("offset:" + offset);
 
             return offset;
         }
@@ -32,4 +25,18 @@ namespace GlobalMediaControl
             return new Size(0, 0);
         }
     }
+    public class ColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string color = (string)value;
+            return System.Windows.Media.ColorConverter.ConvertFromString(color);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ((System.Windows.Media.Color)value).ToString();
+        }
+    }
+
 }

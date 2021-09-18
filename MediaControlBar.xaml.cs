@@ -7,6 +7,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Animation;
 using System.Globalization;
+using System.Windows.Controls.Primitives;
+using System.Windows.Interop;
+using System.Runtime.InteropServices;
 
 using Windows.Media.Control;
 using Windows.Storage.Streams;
@@ -59,10 +62,10 @@ namespace GlobalMediaControl
 
             SlideUp.Completed += (s, e) => LastSkipActionIsPrev = false;
             SlideDown.Completed += (s, e) => LastSkipActionIsPrev = false;
+
             // SlideUp.Completed += (s, e) => OnTitleLableSizeChanged(null, null);
             // SlideDown.Completed += (s, e) => OnTitleLableSizeChanged(null, null);
             // canvas.SizeChanged += OnTitleLableSizeChanged;
-
         }
 
         private void UpdateUI(Action act)
@@ -120,7 +123,14 @@ namespace GlobalMediaControl
             {
                 return;
             }
-            MediaProps = await sender.TryGetMediaPropertiesAsync();
+            try
+            {
+                MediaProps = await sender.TryGetMediaPropertiesAsync();
+            }
+            catch
+            {
+                return;
+            }
 
             if (MediaProps != null)
             {
@@ -156,7 +166,7 @@ namespace GlobalMediaControl
                 UpdateUI(() =>
                 {
                     albumImg.Source = AlbumImgSrc;
-                    titleBlock.Content = MediaProps.Title;
+                    titleBlock.Text = MediaProps.Title;
                     artistBlock.Text = ArtistLine;
                     if (LastSkipActionIsPrev)
                     {
@@ -226,6 +236,19 @@ namespace GlobalMediaControl
             SkipNowPlaying(e.Delta > 0);
         }
 
+        private void OnToolTipLoad(object sender, RoutedEventArgs e)
+        {
+            var child = (FrameworkElement)sender;
+            while (child != null)
+            {
+                if (child.GetType() == typeof(ToolTip))
+                {
+                    AcrylicWindowHelper.EnableBlur(child);
+                }
+                child = child.Parent as FrameworkElement;
+            }
+        }
+
         private void OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left && e.ClickCount == 2)
@@ -257,11 +280,11 @@ namespace GlobalMediaControl
 
         private Size MeasureString(string candidate)
         {
-             var typeFace = new Typeface(
-                 titleBlock.FontFamily,
-                 titleBlock.FontStyle,
-                 titleBlock.FontWeight,
-                 titleBlock.FontStretch);
+            var typeFace = new Typeface(
+                titleBlock.FontFamily,
+                titleBlock.FontStyle,
+                titleBlock.FontWeight,
+                titleBlock.FontStretch);
 
             var culture = new CultureInfo("zh-CN");
             var formattedText = new FormattedText(

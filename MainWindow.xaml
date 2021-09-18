@@ -5,10 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:GlobalMediaControl="clr-namespace:GlobalMediaControl"
         mc:Ignorable="d"
-        Width="204.53"
-        Height="80"
+        Width="200"
+        MinHeight="40"
+        MaxHeight="40"
+        MinWidth="200"
+        MaxWidth="1000"
+        Background="#01000000"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
+        SizeToContent="Height"
+        ResizeMode="CanResize"
+        Loaded="Window_Loaded"
+        MouseDown="WindowDrag"
         Title="MainWindow">
     <Grid>
-        <GlobalMediaControl:MediaControlBar HorizontalAlignment="Left" Height="40" Margin="0,0,0,0" VerticalAlignment="Top" Loaded="GlobalMediaControl_Loaded"/>
+        <GlobalMediaControl:MediaControlBar HorizontalAlignment="Left" Height="40" Margin="0,0,0,0" VerticalAlignment="Top" />
     </Grid>
 </Window>
