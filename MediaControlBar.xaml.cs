@@ -23,9 +23,9 @@ namespace GlobalMediaControl
     {
         public static readonly ImageSource DefaultAlbumImgSrc = new BitmapImage(new Uri("pack://application:,,,/GlobalMediaControl;component/Resources/album-32.jpg"));
 
-        private Storyboard SlideUp, SlideDown, Fade, Marquee;
+        private readonly Storyboard SlideUp, SlideDown, Fade, Marquee;
 
-        private DoubleAnimation TitleAnime;
+        private readonly DoubleAnimation TitleAnime;
 
         private bool LastSkipActionIsPrev = false;
 
@@ -44,16 +44,24 @@ namespace GlobalMediaControl
         public MediaControlBar()
         {
             InitializeComponent();
-            InitMediaSessionManager();
+
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+
+            File.WriteAllText("D:\\media_control.log", "loaded\n");
+
+            Dispatcher.InvokeAsync(InitMediaSessionManager);
+            // InitMediaSessionManager();
 
             AlbumImgSrc = DefaultAlbumImgSrc;
 
-            TitleAnime = new DoubleAnimation();
-            TitleAnime.From = 0;
-            TitleAnime.To = 0;
-            TitleAnime.Duration = new Duration(TimeSpan.FromSeconds(3));
-            TitleAnime.RepeatBehavior = new RepeatBehavior(1);
-            TitleAnime.FillBehavior = FillBehavior.Stop;
+            TitleAnime = new DoubleAnimation
+            {
+                From = 0,
+                To = 0,
+                Duration = new Duration(TimeSpan.FromSeconds(3)),
+                RepeatBehavior = new RepeatBehavior(1),
+                FillBehavior = FillBehavior.Stop
+            };
 
             Fade = (Storyboard)Resources["fadeStoryBoard"];
             Marquee = (Storyboard)Resources["marqueeStoryBoard"];
@@ -66,6 +74,11 @@ namespace GlobalMediaControl
             // SlideUp.Completed += (s, e) => OnTitleLableSizeChanged(null, null);
             // SlideDown.Completed += (s, e) => OnTitleLableSizeChanged(null, null);
             // canvas.SizeChanged += OnTitleLableSizeChanged;
+        }
+
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            File.AppendAllText("D:\\media_control.log", e.ExceptionObject.ToString());
         }
 
         private void UpdateUI(Action act)
@@ -244,6 +257,7 @@ namespace GlobalMediaControl
                 if (child.GetType() == typeof(ToolTip))
                 {
                     AcrylicWindowHelper.EnableBlur(child);
+                    break;
                 }
                 child = child.Parent as FrameworkElement;
             }

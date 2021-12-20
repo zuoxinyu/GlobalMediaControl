@@ -36,6 +36,7 @@ namespace CSDeskBand
             _provider = provider;
             Options = provider.Options;
             Options.PropertyChanged += Options_PropertyChanged;
+            Options.MinHorizontalSize = new DeskBandSize(200, -1);
         }
 
         /// <summary>

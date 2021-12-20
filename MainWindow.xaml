@@ -13,6 +13,7 @@
         Background="#01000000"
         AllowsTransparency="True"
         WindowStyle="None"
+        Topmost="True"
         WindowStartupLocation="CenterScreen"
         SizeToContent="Height"
         ResizeMode="CanResize"
