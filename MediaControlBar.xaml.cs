@@ -52,6 +52,9 @@ namespace GlobalMediaControl
             Dispatcher.InvokeAsync(InitMediaSessionManager);
             // InitMediaSessionManager();
 
+            // freeze to avoid leaking, see: https://stackoverflow.com/questions/799911/in-what-scenarios-does-freezing-wpf-objects-benefit-performance-greatly
+            DefaultAlbumImgSrc.Freeze();
+
             AlbumImgSrc = DefaultAlbumImgSrc;
 
             TitleAnime = new DoubleAnimation
@@ -179,6 +182,7 @@ namespace GlobalMediaControl
                 UpdateUI(() =>
                 {
                     albumImg.Source = AlbumImgSrc;
+                    albumImg.Source.Freeze();
                     titleBlock.Text = MediaProps.Title;
                     artistBlock.Text = ArtistLine;
                     if (LastSkipActionIsPrev)
